@@ -1,19 +1,29 @@
 import { Canvas } from '@react-three/fiber';
-import { Stats, OrbitControls, Environment } from '@react-three/drei';
+import {
+  Stats,
+  OrbitControls,
+  Environment,
+  PerspectiveCamera
+} from '@react-three/drei';
 import Floor from './Floor';
+import Cube from './Cube';
+import { Vector3 } from 'three';
+import Cubie from './Cubie';
 
 const App = () => {
   return (
-    <Canvas camera={{ position: [-0.5, 1, 2] }}>
-      <ambientLight intensity={0.5} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} />
-      <Floor />
-
+    <Canvas>
+      <PerspectiveCamera makeDefault position={[7, 5, 7]} near={0.1} far={1000}>
+        <Cubie position={[3, 3, 3]} visible={true} />
+      </PerspectiveCamera>
+      <Environment files="sunflowers_puresky_1k.hdr" background />
       <Stats />
-      <Environment preset="forest" background />
       <OrbitControls />
-      <axesHelper args={[5]} />
+
+      <Cube position={new Vector3(0, 0, 0)} />
+
+      <Floor />
+      <axesHelper args={[3]} />
     </Canvas>
   );
 };
