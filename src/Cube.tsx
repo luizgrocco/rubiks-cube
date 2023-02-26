@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { MeshBasicMaterial, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { useMemo, useRef } from 'react';
+import { Group, MeshBasicMaterial, Vector3 } from 'three';
 import Cubie from './Cubie';
 
 interface CubeProps {
@@ -7,6 +8,11 @@ interface CubeProps {
 }
 
 const Cube = ({ position: { x, y, z } }: CubeProps) => {
+  const cubeRef = useRef<Group>(null);
+  const moveGroup = useMemo(() => new Group(), []);
+
+  console.log({ moveGroup });
+
   const cubieMaterials = useMemo(
     () => [
       new MeshBasicMaterial({ color: 'red' }),
@@ -38,8 +44,13 @@ const Cube = ({ position: { x, y, z } }: CubeProps) => {
     return positions;
   }, [x, y, z]);
 
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    if (cubeRef.current) cubeRef.current.rotation.x = Math.sin(time);
+  });
+
   return (
-    <>
+    <group ref={cubeRef} position={[x, y, z]}>
       {cubiePositions.map(([x, y, z], index) => (
         <Cubie
           key={index}
@@ -48,7 +59,7 @@ const Cube = ({ position: { x, y, z } }: CubeProps) => {
           selectedMaterial={selectedMaterial}
         />
       ))}
-    </>
+    </group>
   );
 };
 
