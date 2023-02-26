@@ -1,5 +1,5 @@
-import Scene from './Scene';
-import Controls from './Controls';
+import Scene from './components/Scene';
+import Controls from './components/Controls';
 
 const App = () => {
   return (

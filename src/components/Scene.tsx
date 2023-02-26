@@ -11,8 +11,6 @@ import { Vector3 } from 'three';
 import Cubie from './Cubie';
 
 const Scene = () => {
-  console.log('re-rendered scene');
-
   return (
     <Canvas>
       <PerspectiveCamera makeDefault position={[7, 5, 7]} near={0.1} far={1000}>

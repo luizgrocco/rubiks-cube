@@ -1,15 +1,29 @@
+import { useEffect, useMemo, useRef } from 'react';
+import { Group, MeshBasicMaterial, type Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
-import { Group, MeshBasicMaterial, Vector3 } from 'three';
 import Cubie from './Cubie';
+import { useSceneStore } from '../store/zustand';
 
 interface CubeProps {
   position: Vector3;
 }
 
 const Cube = ({ position: { x, y, z } }: CubeProps) => {
+  const { setCubeRef, setMoveGroupRef } = useSceneStore();
   const cubeRef = useRef<Group>(null);
-  const moveGroup = useMemo(() => new Group(), []);
+  const moveGroup = useMemo(() => {
+    const group = new Group();
+    group.position.set(x, y, z);
+    return group;
+  }, [x, y, z]);
+
+  useEffect(() => {
+    if (cubeRef.current) setCubeRef(cubeRef.current);
+  }, [cubeRef, setCubeRef]);
+
+  useEffect(() => {
+    setMoveGroupRef(moveGroup);
+  }, [moveGroup, setMoveGroupRef]);
 
   console.log({ moveGroup });
 
