@@ -4,19 +4,18 @@ import { useRef, useState } from 'react';
 import { Material, Mesh } from 'three';
 
 interface CubieProps extends MeshProps {
-  selectedMaterial?: Material;
-  cubieMaterials?: Array<Material>;
+  selectedMaterial: Material;
+  cubieMaterials: Array<Material>;
 }
 
 export default function Cubie({
   cubieMaterials,
   selectedMaterial,
+  geometry,
   ...meshProps
 }: CubieProps) {
   const cubieRef = useRef<Mesh>(null);
   const [hovered, setHovered] = useState(false);
-
-  // console.log({ id: cubieRef.current?.uuid });
 
   return (
     <mesh
@@ -28,12 +27,8 @@ export default function Cubie({
       }}
       onPointerOut={() => setHovered(false)}
       castShadow
+      geometry={geometry}
       material={hovered ? selectedMaterial : cubieMaterials}>
-      <boxGeometry args={[1, 1]} />
-      {!selectedMaterial && !cubieMaterials && (
-        <meshBasicMaterial color={'hotpink'} />
-      )}
-
       <Edges />
     </mesh>
   );

@@ -3,27 +3,39 @@ import {
   Stats,
   OrbitControls,
   Environment,
-  PerspectiveCamera
+  PerspectiveCamera,
+  Box
 } from '@react-three/drei';
 import Floor from './Floor';
 import Cube from './Cube';
-import { Vector3 } from 'three';
-import Cubie from './Cubie';
+import { useRef } from 'react';
+import { type Camera } from 'three';
+import Controls from './Controls';
 
 const Scene = () => {
+  const cameraRef = useRef<Camera>();
+
+  console.log({ cameraRef });
+
   return (
     <Canvas>
-      <PerspectiveCamera makeDefault position={[7, 5, 7]} near={0.1} far={1000}>
-        <Cubie position={[3, 3, 3]} visible={true} />
+      <PerspectiveCamera
+        ref={cameraRef}
+        makeDefault
+        position={[7, 5, 7]}
+        near={0.1}
+        far={1000}>
+        <Box args={[1, 0, 0]} />
       </PerspectiveCamera>
       <Environment files="sunflowers_puresky_1k.hdr" background />
       <Stats />
       <OrbitControls />
 
-      <Cube position={new Vector3(0, 0, 0)} />
+      <Cube position={[0, 0, 0]} />
 
       <Floor />
       <axesHelper args={[3]} />
+      <Controls />
     </Canvas>
   );
 };

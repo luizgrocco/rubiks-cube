@@ -4,16 +4,17 @@ import { devtools } from 'zustand/middleware';
 
 interface SceneState {
   cubeRef: Group | null;
-  setCubeRef: (cubeRef: Group) => void;
+  setCubeRef: (cubeRef: Group | null) => void;
   moveGroupRef: Group | null;
-  setMoveGroupRef: (moveGroup: Group) => void;
+  setMoveGroupRef: (moveGroup: Group | null) => void;
 }
 
 export const useSceneStore = create<SceneState>()(
   devtools((set) => ({
     cubeRef: null,
-    setCubeRef: (cubeRef: Group) => set(() => ({ cubeRef })),
+    setCubeRef: (cubeRef: Group | null) => set(() => ({ cubeRef: cubeRef })),
     moveGroupRef: null,
-    setMoveGroupRef: (moveGroupRef: Group) => set(() => ({ moveGroupRef }))
+    setMoveGroupRef: (moveGroupRef: Group | null) =>
+      set(() => ({ moveGroupRef: moveGroupRef }))
   }))
 );

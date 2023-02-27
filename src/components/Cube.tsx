@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Group, MeshBasicMaterial, type Vector3 } from 'three';
-import { useFrame } from '@react-three/fiber';
+import { BoxGeometry, Group, MeshBasicMaterial } from 'three';
 import Cubie from './Cubie';
 import { useSceneStore } from '../store/zustand';
 
 interface CubeProps {
-  position: Vector3;
+  position: [x: number, y: number, z: number];
 }
 
-const Cube = ({ position: { x, y, z } }: CubeProps) => {
+const Cube = ({ position: [x, y, z] }: CubeProps) => {
   const { setCubeRef, setMoveGroupRef } = useSceneStore();
   const cubeRef = useRef<Group>(null);
   const moveGroup = useMemo(() => {
@@ -19,13 +18,15 @@ const Cube = ({ position: { x, y, z } }: CubeProps) => {
 
   useEffect(() => {
     if (cubeRef.current) setCubeRef(cubeRef.current);
+
+    return () => setCubeRef(null);
   }, [cubeRef, setCubeRef]);
 
   useEffect(() => {
     setMoveGroupRef(moveGroup);
-  }, [moveGroup, setMoveGroupRef]);
 
-  console.log({ moveGroup });
+    return () => setMoveGroupRef(null);
+  }, [moveGroup, setMoveGroupRef]);
 
   const cubieMaterials = useMemo(
     () => [
@@ -58,10 +59,7 @@ const Cube = ({ position: { x, y, z } }: CubeProps) => {
     return positions;
   }, [x, y, z]);
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    if (cubeRef.current) cubeRef.current.rotation.x = Math.sin(time);
-  });
+  const cubieGeometry = useMemo(() => new BoxGeometry(1, 1), []);
 
   return (
     <group ref={cubeRef} position={[x, y, z]}>
@@ -69,6 +67,7 @@ const Cube = ({ position: { x, y, z } }: CubeProps) => {
         <Cubie
           key={index}
           position={[x, y, z]}
+          geometry={cubieGeometry}
           cubieMaterials={cubieMaterials}
           selectedMaterial={selectedMaterial}
         />
