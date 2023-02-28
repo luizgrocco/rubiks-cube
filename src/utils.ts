@@ -26,6 +26,40 @@ export const getCubiesByFace = (
   }
 };
 
+export const getCubiesByMove = (
+  move: Move,
+  cubeRef: RubikCube
+): Array<Cubie> => {
+  switch (move) {
+    case 'R':
+      return getCubiesByFace('RIGHT', cubeRef);
+    case "R'":
+      return getCubiesByFace('RIGHT', cubeRef);
+    case 'L':
+      return getCubiesByFace('LEFT', cubeRef);
+    case "L'":
+      return getCubiesByFace('LEFT', cubeRef);
+    case 'U':
+      return getCubiesByFace('UPPER', cubeRef);
+    case "U'":
+      return getCubiesByFace('UPPER', cubeRef);
+    case 'D':
+      return getCubiesByFace('DOWN', cubeRef);
+    case "D'":
+      return getCubiesByFace('DOWN', cubeRef);
+    case 'F':
+      return getCubiesByFace('FRONT', cubeRef);
+    case "F'":
+      return getCubiesByFace('FRONT', cubeRef);
+    case 'B':
+      return getCubiesByFace('BACK', cubeRef);
+    case "B'":
+      return getCubiesByFace('BACK', cubeRef);
+    default:
+      return cubeRef.children;
+  }
+};
+
 export type Move =
   | 'R'
   | "R'"
@@ -77,6 +111,8 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
       break;
     case "B'":
       moveGroup.rotation.y -= delta;
+      break;
+    default:
       break;
   }
 };
