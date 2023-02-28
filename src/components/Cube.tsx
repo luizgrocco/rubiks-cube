@@ -1,33 +1,17 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { BoxGeometry, Group, MeshBasicMaterial } from 'three';
+import { ForwardedRef, forwardRef, useMemo } from 'react';
+import { BoxGeometry, type Group, MeshBasicMaterial } from 'three';
 import Cubie from './Cubie';
-import { useSceneStore } from '../store/zustand';
+
+export type RubikCube = Group;
 
 interface CubeProps {
   position: [x: number, y: number, z: number];
 }
 
-const Cube = ({ position: [x, y, z] }: CubeProps) => {
-  const { setCubeRef, setMoveGroupRef } = useSceneStore();
-  const cubeRef = useRef<Group>(null);
-  const moveGroup = useMemo(() => {
-    const group = new Group();
-    group.position.set(x, y, z);
-    return group;
-  }, [x, y, z]);
-
-  useEffect(() => {
-    if (cubeRef.current) setCubeRef(cubeRef.current);
-
-    return () => setCubeRef(null);
-  }, [cubeRef, setCubeRef]);
-
-  useEffect(() => {
-    setMoveGroupRef(moveGroup);
-
-    return () => setMoveGroupRef(null);
-  }, [moveGroup, setMoveGroupRef]);
-
+const Cube = (
+  { position: [x, y, z] }: CubeProps,
+  ref: ForwardedRef<RubikCube>
+) => {
   const cubieMaterials = useMemo(
     () => [
       new MeshBasicMaterial({ color: 'red' }),
@@ -62,7 +46,7 @@ const Cube = ({ position: [x, y, z] }: CubeProps) => {
   const cubieGeometry = useMemo(() => new BoxGeometry(1, 1), []);
 
   return (
-    <group ref={cubeRef} position={[x, y, z]}>
+    <group ref={ref} position={[x, y, z]}>
       {cubiePositions.map(([x, y, z], index) => (
         <Cubie
           key={index}
@@ -76,4 +60,4 @@ const Cube = ({ position: [x, y, z] }: CubeProps) => {
   );
 };
 
-export default Cube;
+export default forwardRef(Cube);
