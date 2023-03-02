@@ -46,7 +46,7 @@ const Cube = (
   const cubieGeometry = useMemo(() => new BoxGeometry(1, 1), []);
 
   return (
-    <group ref={ref} position={[x, y, z]}>
+    <group ref={ref} position={[x, y, z]} name="Cube">
       {cubiePositions.map(([x, y, z], index) => (
         <Cubie
           key={index}

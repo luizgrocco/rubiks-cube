@@ -1,13 +1,13 @@
-import { Html } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
-import { RefObject, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQueue } from 'react-use';
 import { Group } from 'three';
-import { getCubiesByMove, makeMove, Move } from '../utils';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { addMoveToQueue, cleanUpMove, makeMove, Move } from '../utils';
 import { RubikCube } from './Cube';
 
-interface QueueAction {
+export interface QueueAction {
   move: Move;
   initialized: boolean;
   initializationFn: () => void;
@@ -15,14 +15,39 @@ interface QueueAction {
 }
 
 interface ControlsProps {
-  cubeRef: RefObject<RubikCube>;
+  // cubeRef: RefObject<RubikCube>;
   position: [x: number, y: number, z: number];
+  cube: RubikCube;
 }
 
-const Controls = ({ cubeRef, position: [x, y, z] }: ControlsProps) => {
-  const moveGroup = useRef<Group>(null);
+const Controls = ({ position, cube }: ControlsProps) => {
+  const { scene } = useThree();
+
+  const moveGroup = useMemo(() => {
+    const group = new Group();
+    group.position.set(...position);
+    return group;
+  }, [position]);
+
+  useEffect(() => {
+    scene.add(moveGroup);
+  }, [moveGroup, scene]);
+
   const { add, remove, first: currentMove, size } = useQueue<QueueAction>();
-  const isThereMoveToExecute = useMemo(() => size > 0, [size]);
+  const isThereAMoveToExecute = useMemo(() => size > 0, [size]);
+
+  useHotkeys('r', () => addMoveToQueue(add, 'R', moveGroup, cube));
+  useHotkeys('l', () => addMoveToQueue(add, 'L', moveGroup, cube));
+  useHotkeys('u', () => addMoveToQueue(add, 'U', moveGroup, cube));
+  useHotkeys('d', () => addMoveToQueue(add, 'D', moveGroup, cube));
+  useHotkeys('f', () => addMoveToQueue(add, 'F', moveGroup, cube));
+  useHotkeys('b', () => addMoveToQueue(add, 'B', moveGroup, cube));
+  useHotkeys('shift+r', () => addMoveToQueue(add, "R'", moveGroup, cube));
+  useHotkeys('shift+l', () => addMoveToQueue(add, "L'", moveGroup, cube));
+  useHotkeys('shift+u', () => addMoveToQueue(add, "U'", moveGroup, cube));
+  useHotkeys('shift+d', () => addMoveToQueue(add, "D'", moveGroup, cube));
+  useHotkeys('shift+f', () => addMoveToQueue(add, "F'", moveGroup, cube));
+  useHotkeys('shift+b', () => addMoveToQueue(add, "B'", moveGroup, cube));
 
   useControls(() => ({
     rotateX: {
@@ -31,8 +56,7 @@ const Controls = ({ cubeRef, position: [x, y, z] }: ControlsProps) => {
       max: 360,
       step: 1,
       onChange: (rotateX) => {
-        if (cubeRef.current)
-          cubeRef.current.rotation.x = (rotateX * Math.PI) / 180;
+        cube.rotation.x = (rotateX * Math.PI) / 180;
       }
     },
     rotateY: {
@@ -41,8 +65,7 @@ const Controls = ({ cubeRef, position: [x, y, z] }: ControlsProps) => {
       max: 360,
       step: 1,
       onChange: (rotateY) => {
-        if (cubeRef.current)
-          cubeRef.current.rotation.y = (rotateY * Math.PI) / 180;
+        cube.rotation.y = (rotateY * Math.PI) / 180;
       }
     },
     rotateZ: {
@@ -51,29 +74,35 @@ const Controls = ({ cubeRef, position: [x, y, z] }: ControlsProps) => {
       max: 360,
       step: 1,
       onChange: (rotateZ) => {
-        if (cubeRef.current)
-          cubeRef.current.rotation.z = (rotateZ * Math.PI) / 180;
+        cube.rotation.z = (rotateZ * Math.PI) / 180;
       }
     },
     resetCube: {
       value: true,
       onChange: () => {
-        if (cubeRef.current) {
-          cubeRef.current.rotation.set(0, 0, 0);
-          cubeRef.current.position.set(x, y, z);
-        }
+        cube.rotation.set(0, 0, 0);
+        cube.position.set(...position);
+        const children = [...cube.children];
+        cube.children = [];
+        cube.add(...children);
       }
     }
   }));
 
   useFrame(() => {
-    if (isThereMoveToExecute) {
-      if (!currentMove.initialized) currentMove.initializationFn();
+    if (isThereAMoveToExecute) {
+      if (!currentMove.initialized) {
+        console.log({ currentMove: currentMove.move });
+        currentMove.initializationFn();
+      }
       if (!currentMove.stopCondition()) {
-        const delta = Math.PI / 4 / 144;
-        if (moveGroup.current)
-          makeMove(currentMove.move, moveGroup.current, delta);
+        const delta = Math.PI / 4 / 60;
+        makeMove(currentMove.move, moveGroup, delta);
       } else {
+        cleanUpMove(currentMove.move, moveGroup);
+        const newChildren = [...moveGroup.children];
+        newChildren.forEach((child) => cube.attach(child));
+        moveGroup.rotation.set(0, 0, 0);
         remove();
       }
     }
@@ -81,67 +110,9 @@ const Controls = ({ cubeRef, position: [x, y, z] }: ControlsProps) => {
 
   return (
     <>
-      <group position={[x, y, z]} ref={moveGroup} />
-      <Html position={[0, 0, 3]}>
-        <button
-          type="button"
-          onClick={() => {
-            add({
-              move: 'R',
-              initialized: false,
-              initializationFn: function () {
-                if (moveGroup.current && cubeRef.current) {
-                  console.log('initialized');
-                  moveGroup.current.add(
-                    ...getCubiesByMove('R', cubeRef.current)
-                  );
-                  this.initialized = true;
-                } else {
-                  this.initialized = false;
-                }
-                console.log(this.initialized);
-              },
-              stopCondition: () => {
-                if (moveGroup.current) {
-                  return moveGroup.current.rotation.x >= Math.PI / 4;
-                } else {
-                  return false;
-                }
-              }
-            });
-            // const leftFaces = cubeRef.current
-            //   ? getCubiesByFace('FRONT', cubeRef.current)
-            //   : [];
-            // leftFaces.forEach((face) => {
-            //   if (moveGroup.current) moveGroup.current.add(face);
-            // });
-            // if (moveGroup.current && cubeRef.current)
-            //   moveGroup.current.add(
-            //     ...getCubiesByFace('LEFT', cubeRef.current)
-            //   );
-            // if (size === 0) add('R');
-            // if (first === 'R') remove();
-            // console.log({ size });
-            // // State after event
-            // console.log({ cubeRef });
-            // console.log({ moveGroup });
-          }}>
-          Click me!
-        </button>
-        {/* <ul>
-          <li>first: {first}</li>
-          <li>last: {last}</li>
-          <li>size: {size}</li>
-        </ul>
-        <button onClick={() => add((last || 0) + 1)}>Add</button>
-        <button
-          onClick={() => {
-            const removedValue = remove();
-            console.log({ removedValue });
-          }}>
-          Remove
-        </button> */}
-      </Html>
+      {/* <Html position={[0, 0, 3]}>
+        <button type="button">Click me!</button>
+      </Html> */}
     </>
   );
 };
