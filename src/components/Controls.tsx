@@ -1,11 +1,12 @@
 import { useFrame, useThree } from '@react-three/fiber';
+import { Html, ScreenSpace } from '@react-three/drei';
 import { useControls } from 'leva';
 import { useEffect, useMemo } from 'react';
-import { useQueue } from 'react-use';
 import { Group } from 'three';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { addMoveToQueue, cleanUpMove, makeMove, Move } from '../utils';
+import { addMoveToQueue, cleanUpMove, makeMove, Move } from '../helpers/utils';
 import { RubikCube } from './Cube';
+import { useQueue } from '../helpers/hooks';
 
 export interface QueueAction {
   move: Move;
@@ -33,23 +34,19 @@ const Controls = ({ position, cube }: ControlsProps) => {
     scene.add(moveGroup);
   }, [moveGroup, scene]);
 
-  const { add, remove, first: currentMove, size } = useQueue<QueueAction>();
+  const {
+    add,
+    remove,
+    first: currentMove,
+    size,
+    queue
+  } = useQueue<QueueAction>();
+
+  console.log({ queue });
+
   const isThereAMoveToExecute = useMemo(() => size > 0, [size]);
 
-  useHotkeys('r', () => addMoveToQueue(add, 'R', moveGroup, cube));
-  useHotkeys('l', () => addMoveToQueue(add, 'L', moveGroup, cube));
-  useHotkeys('u', () => addMoveToQueue(add, 'U', moveGroup, cube));
-  useHotkeys('d', () => addMoveToQueue(add, 'D', moveGroup, cube));
-  useHotkeys('f', () => addMoveToQueue(add, 'F', moveGroup, cube));
-  useHotkeys('b', () => addMoveToQueue(add, 'B', moveGroup, cube));
-  useHotkeys('shift+r', () => addMoveToQueue(add, "R'", moveGroup, cube));
-  useHotkeys('shift+l', () => addMoveToQueue(add, "L'", moveGroup, cube));
-  useHotkeys('shift+u', () => addMoveToQueue(add, "U'", moveGroup, cube));
-  useHotkeys('shift+d', () => addMoveToQueue(add, "D'", moveGroup, cube));
-  useHotkeys('shift+f', () => addMoveToQueue(add, "F'", moveGroup, cube));
-  useHotkeys('shift+b', () => addMoveToQueue(add, "B'", moveGroup, cube));
-
-  useControls(() => ({
+  const [{ keyboardMode }] = useControls(() => ({
     rotateX: {
       value: 0,
       min: 0,
@@ -86,8 +83,48 @@ const Controls = ({ position, cube }: ControlsProps) => {
         cube.children = [];
         cube.add(...children);
       }
+    },
+    keyboardMode: {
+      value: false
     }
   }));
+
+  useHotkeys(keyboardMode ? 'r' : 'd', () =>
+    addMoveToQueue(cube, moveGroup, add, 'R')
+  );
+  useHotkeys(keyboardMode ? 'l' : 'a', () =>
+    addMoveToQueue(cube, moveGroup, add, 'L')
+  );
+  useHotkeys(keyboardMode ? 'u' : 'w', () =>
+    addMoveToQueue(cube, moveGroup, add, 'U')
+  );
+  useHotkeys(keyboardMode ? 'd' : 's', () =>
+    addMoveToQueue(cube, moveGroup, add, 'D')
+  );
+  useHotkeys(keyboardMode ? 'f' : 'e', () =>
+    addMoveToQueue(cube, moveGroup, add, 'F')
+  );
+  useHotkeys(keyboardMode ? 'b' : 'q', () =>
+    addMoveToQueue(cube, moveGroup, add, 'B')
+  );
+  useHotkeys(keyboardMode ? 'shift+r' : 'shift+d', () =>
+    addMoveToQueue(cube, moveGroup, add, "R'")
+  );
+  useHotkeys(keyboardMode ? 'shift+l' : 'shift+a', () =>
+    addMoveToQueue(cube, moveGroup, add, "L'")
+  );
+  useHotkeys(keyboardMode ? 'shift+u' : 'shift+w', () =>
+    addMoveToQueue(cube, moveGroup, add, "U'")
+  );
+  useHotkeys(keyboardMode ? 'shift+d' : 'shift+s', () =>
+    addMoveToQueue(cube, moveGroup, add, "D'")
+  );
+  useHotkeys(keyboardMode ? 'shift+f' : 'shift+e', () =>
+    addMoveToQueue(cube, moveGroup, add, "F'")
+  );
+  useHotkeys(keyboardMode ? 'shift+b' : 'shift+q', () =>
+    addMoveToQueue(cube, moveGroup, add, "B'")
+  );
 
   useFrame(() => {
     if (isThereAMoveToExecute) {
@@ -110,9 +147,11 @@ const Controls = ({ position, cube }: ControlsProps) => {
 
   return (
     <>
-      {/* <Html position={[0, 0, 3]}>
-        <button type="button">Click me!</button>
-      </Html> */}
+      <ScreenSpace depth={5}>
+        <Html position={[0, 2, 0]}>
+          <div> WHERE IS MY DIIIIIIIIIIV </div>
+        </Html>
+      </ScreenSpace>
     </>
   );
 };

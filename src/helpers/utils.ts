@@ -1,6 +1,6 @@
 import type { Group, Object3D } from 'three';
-import { QueueAction } from './components/Controls';
-import { RubikCube } from './components/Cube';
+import { QueueAction } from '../components/Controls';
+import { RubikCube } from '../components/Cube';
 type Cubie = Object3D;
 type Face = 'RIGHT' | 'LEFT' | 'UPPER' | 'DOWN' | 'BACK' | 'FRONT';
 
@@ -215,22 +215,24 @@ export const createStopCondition = (
 };
 
 export const addMoveToQueue = (
-  add: (item: QueueAction) => void,
-  move: Move,
+  cube: RubikCube,
   moveGroup: Group,
-  cube: RubikCube
+  add: (...items: QueueAction[]) => void,
+  ...moves: Move[]
 ): void => {
-  add({
-    move: move,
-    initialized: false,
-    initializationFn: function () {
-      if (this.initialized === false) {
-        moveGroup.add(...getCubiesByMove(move, cube));
-        this.initialized = true;
-      } else {
-        this.initialized = false;
-      }
-    },
-    stopCondition: createStopCondition(moveGroup, move)
-  });
+  add(
+    ...moves.map((move) => ({
+      move: move,
+      initialized: false,
+      initializationFn: function () {
+        if (this.initialized === false) {
+          moveGroup.add(...getCubiesByMove(move, cube));
+          this.initialized = true;
+        } else {
+          this.initialized = false;
+        }
+      },
+      stopCondition: createStopCondition(moveGroup, move)
+    }))
+  );
 };
