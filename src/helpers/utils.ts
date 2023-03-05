@@ -94,7 +94,11 @@ export type Move =
   | "B"
   | "B'"
   | "X"
-  | "X'";
+  | "X'"
+  | "Y"
+  | "Y'"
+  | "Z"
+  | "Z'";
 
 export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
   switch (move) {
@@ -122,9 +126,11 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
     case "D'":
       moveGroup.rotation.y -= delta;
       break;
+    case "X":
     case "F":
       moveGroup.rotation.z -= delta;
       break;
+    case "X'":
     case "F'":
       moveGroup.rotation.z += delta;
       break;

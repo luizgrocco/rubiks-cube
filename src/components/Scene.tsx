@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useState } from "react";
+import { Canvas } from "@react-three/fiber";
 import {
   Stats,
   OrbitControls,
   Environment,
   PerspectiveCamera,
   Box
-} from '@react-three/drei';
-import Floor from './Floor';
-import Cube, { RubikCube } from './Cube';
-import Controls from './Controls';
+} from "@react-three/drei";
+import Floor from "./Floor";
+import Cube, { RubikCube } from "./Cube";
+import Controls from "./Controls";
 
 const Scene = () => {
   const [cube, setCube] = useState<RubikCube | null>(null);

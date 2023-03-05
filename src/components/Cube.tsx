@@ -1,6 +1,6 @@
-import { ForwardedRef, forwardRef, useMemo } from 'react';
-import { BoxGeometry, type Group, MeshBasicMaterial } from 'three';
-import Cubie from './Cubie';
+import { ForwardedRef, forwardRef, useMemo } from "react";
+import { BoxGeometry, type Group, MeshBasicMaterial } from "three";
+import Cubie from "./Cubie";
 
 export type RubikCube = Group;
 
@@ -14,18 +14,18 @@ const Cube = (
 ) => {
   const cubieMaterials = useMemo(
     () => [
-      new MeshBasicMaterial({ color: 'red' }),
-      new MeshBasicMaterial({ color: 'orange' }),
-      new MeshBasicMaterial({ color: 'white' }),
-      new MeshBasicMaterial({ color: 'yellow' }),
-      new MeshBasicMaterial({ color: 'green' }),
-      new MeshBasicMaterial({ color: 'blue' })
+      new MeshBasicMaterial({ color: "red" }),
+      new MeshBasicMaterial({ color: "orange" }),
+      new MeshBasicMaterial({ color: "white" }),
+      new MeshBasicMaterial({ color: "yellow" }),
+      new MeshBasicMaterial({ color: "green" }),
+      new MeshBasicMaterial({ color: "blue" })
     ],
     []
   );
 
   const selectedMaterial = useMemo(
-    () => new MeshBasicMaterial({ color: 'hotpink' }),
+    () => new MeshBasicMaterial({ color: "hotpink" }),
     []
   );
 

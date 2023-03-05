@@ -1,12 +1,12 @@
-import { useFrame, useThree } from '@react-three/fiber';
-import { Html, ScreenSpace } from '@react-three/drei';
-import { useControls } from 'leva';
-import { useEffect, useMemo } from 'react';
-import { Group } from 'three';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { addMoveToQueue, cleanUpMove, makeMove, Move } from '../helpers/utils';
-import { RubikCube } from './Cube';
-import { useQueue } from '../helpers/hooks';
+import { useFrame, useThree } from "@react-three/fiber";
+import { Html, ScreenSpace } from "@react-three/drei";
+import { useControls } from "leva";
+import { useEffect, useMemo } from "react";
+import { Group } from "three";
+import { useHotkeys } from "react-hotkeys-hook";
+import { addMoveToQueue, cleanUpMove, makeMove, Move } from "../helpers/utils";
+import { RubikCube } from "./Cube";
+import { useQueue } from "../helpers/hooks";
 
 export interface QueueAction {
   move: Move;
@@ -89,40 +89,40 @@ const Controls = ({ position, cube }: ControlsProps) => {
     }
   }));
 
-  useHotkeys(keyboardMode ? 'r' : 'd', () =>
-    addMoveToQueue(cube, moveGroup, add, 'R')
+  useHotkeys(keyboardMode ? "r" : "d", () =>
+    addMoveToQueue(cube, moveGroup, add, "R")
   );
-  useHotkeys(keyboardMode ? 'l' : 'a', () =>
-    addMoveToQueue(cube, moveGroup, add, 'L')
+  useHotkeys(keyboardMode ? "l" : "a", () =>
+    addMoveToQueue(cube, moveGroup, add, "L")
   );
-  useHotkeys(keyboardMode ? 'u' : 'w', () =>
-    addMoveToQueue(cube, moveGroup, add, 'U')
+  useHotkeys(keyboardMode ? "u" : "w", () =>
+    addMoveToQueue(cube, moveGroup, add, "U")
   );
-  useHotkeys(keyboardMode ? 'd' : 's', () =>
-    addMoveToQueue(cube, moveGroup, add, 'D')
+  useHotkeys(keyboardMode ? "d" : "s", () =>
+    addMoveToQueue(cube, moveGroup, add, "D")
   );
-  useHotkeys(keyboardMode ? 'f' : 'e', () =>
-    addMoveToQueue(cube, moveGroup, add, 'F')
+  useHotkeys(keyboardMode ? "f" : "e", () =>
+    addMoveToQueue(cube, moveGroup, add, "F")
   );
-  useHotkeys(keyboardMode ? 'b' : 'q', () =>
-    addMoveToQueue(cube, moveGroup, add, 'B')
+  useHotkeys(keyboardMode ? "b" : "q", () =>
+    addMoveToQueue(cube, moveGroup, add, "B")
   );
-  useHotkeys(keyboardMode ? 'shift+r' : 'shift+d', () =>
+  useHotkeys(keyboardMode ? "shift+r" : "shift+d", () =>
     addMoveToQueue(cube, moveGroup, add, "R'")
   );
-  useHotkeys(keyboardMode ? 'shift+l' : 'shift+a', () =>
+  useHotkeys(keyboardMode ? "shift+l" : "shift+a", () =>
     addMoveToQueue(cube, moveGroup, add, "L'")
   );
-  useHotkeys(keyboardMode ? 'shift+u' : 'shift+w', () =>
+  useHotkeys(keyboardMode ? "shift+u" : "shift+w", () =>
     addMoveToQueue(cube, moveGroup, add, "U'")
   );
-  useHotkeys(keyboardMode ? 'shift+d' : 'shift+s', () =>
+  useHotkeys(keyboardMode ? "shift+d" : "shift+s", () =>
     addMoveToQueue(cube, moveGroup, add, "D'")
   );
-  useHotkeys(keyboardMode ? 'shift+f' : 'shift+e', () =>
+  useHotkeys(keyboardMode ? "shift+f" : "shift+e", () =>
     addMoveToQueue(cube, moveGroup, add, "F'")
   );
-  useHotkeys(keyboardMode ? 'shift+b' : 'shift+q', () =>
+  useHotkeys(keyboardMode ? "shift+b" : "shift+q", () =>
     addMoveToQueue(cube, moveGroup, add, "B'")
   );
 
