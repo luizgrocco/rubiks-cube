@@ -1,4 +1,4 @@
-import { useList } from 'react-use';
+import { useList } from "react-use";
 
 export const useQueue = <T>(initialValue: T[] = []) => {
   const [list, { push, removeAt, clear }] = useList<T>(initialValue);

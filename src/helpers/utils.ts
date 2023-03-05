@@ -1,8 +1,8 @@
-import type { Group, Object3D } from 'three';
-import { QueueAction } from '../components/Controls';
-import { RubikCube } from '../components/Cube';
+import type { Group, Object3D } from "three";
+import { QueueAction } from "../components/Controls";
+import { RubikCube } from "../components/Cube";
 type Cubie = Object3D;
-type Face = 'RIGHT' | 'LEFT' | 'UPPER' | 'DOWN' | 'BACK' | 'FRONT';
+type Face = "RIGHT" | "LEFT" | "UPPER" | "DOWN" | "BACK" | "FRONT";
 
 const EPSILON = Number.EPSILON * 10;
 
@@ -11,32 +11,32 @@ export const getCubiesByFace = (
   cubeRef: RubikCube
 ): Array<Cubie> => {
   switch (face) {
-    case 'RIGHT':
+    case "RIGHT":
       return cubeRef.children.filter(
         (child) =>
           child.position.x >= 1 - EPSILON && child.position.x <= 1 + EPSILON
       );
-    case 'LEFT':
+    case "LEFT":
       return cubeRef.children.filter(
         (child) =>
           child.position.x >= -(1 + EPSILON) && child.position.x <= -1 + EPSILON
       );
-    case 'UPPER':
+    case "UPPER":
       return cubeRef.children.filter(
         (child) =>
           child.position.y >= 1 - EPSILON && child.position.y <= 1 + EPSILON
       );
-    case 'DOWN':
+    case "DOWN":
       return cubeRef.children.filter(
         (child) =>
           child.position.y >= -(1 + EPSILON) && child.position.y <= -1 + EPSILON
       );
-    case 'FRONT':
+    case "FRONT":
       return cubeRef.children.filter(
         (child) =>
           child.position.z >= 1 - EPSILON && child.position.z <= 1 + EPSILON
       );
-    case 'BACK':
+    case "BACK":
       return cubeRef.children.filter(
         (child) =>
           child.position.z >= -(1 + EPSILON) && child.position.z <= -1 + EPSILON
@@ -51,82 +51,84 @@ export const getCubiesByMove = (
   cubeRef: RubikCube
 ): Array<Cubie> => {
   switch (move) {
-    case 'R':
-      return getCubiesByFace('RIGHT', cubeRef);
+    case "R":
+      return getCubiesByFace("RIGHT", cubeRef);
     case "R'":
-      return getCubiesByFace('RIGHT', cubeRef);
-    case 'L':
-      return getCubiesByFace('LEFT', cubeRef);
+      return getCubiesByFace("RIGHT", cubeRef);
+    case "L":
+      return getCubiesByFace("LEFT", cubeRef);
     case "L'":
-      return getCubiesByFace('LEFT', cubeRef);
-    case 'U':
-      return getCubiesByFace('UPPER', cubeRef);
+      return getCubiesByFace("LEFT", cubeRef);
+    case "U":
+      return getCubiesByFace("UPPER", cubeRef);
     case "U'":
-      return getCubiesByFace('UPPER', cubeRef);
-    case 'D':
-      return getCubiesByFace('DOWN', cubeRef);
+      return getCubiesByFace("UPPER", cubeRef);
+    case "D":
+      return getCubiesByFace("DOWN", cubeRef);
     case "D'":
-      return getCubiesByFace('DOWN', cubeRef);
-    case 'F':
-      return getCubiesByFace('FRONT', cubeRef);
+      return getCubiesByFace("DOWN", cubeRef);
+    case "F":
+      return getCubiesByFace("FRONT", cubeRef);
     case "F'":
-      return getCubiesByFace('FRONT', cubeRef);
-    case 'B':
-      return getCubiesByFace('BACK', cubeRef);
+      return getCubiesByFace("FRONT", cubeRef);
+    case "B":
+      return getCubiesByFace("BACK", cubeRef);
     case "B'":
-      return getCubiesByFace('BACK', cubeRef);
+      return getCubiesByFace("BACK", cubeRef);
     default:
       return cubeRef.children;
   }
 };
 
 export type Move =
-  | 'R'
+  | "R"
   | "R'"
-  | 'L'
+  | "L"
   | "L'"
-  | 'U'
+  | "U"
   | "U'"
-  | 'D'
+  | "D"
   | "D'"
-  | 'F'
+  | "F"
   | "F'"
-  | 'B'
-  | "B'";
+  | "B"
+  | "B'"
+  | "X"
+  | "X'";
 
 export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
   switch (move) {
-    case 'R':
+    case "R":
       moveGroup.rotation.x -= delta;
       break;
     case "R'":
       moveGroup.rotation.x += delta;
       break;
-    case 'L':
+    case "L":
       moveGroup.rotation.x += delta;
       break;
     case "L'":
       moveGroup.rotation.x -= delta;
       break;
-    case 'U':
+    case "U":
       moveGroup.rotation.y -= delta;
       break;
     case "U'":
       moveGroup.rotation.y += delta;
       break;
-    case 'D':
+    case "D":
       moveGroup.rotation.y += delta;
       break;
     case "D'":
       moveGroup.rotation.y -= delta;
       break;
-    case 'F':
+    case "F":
       moveGroup.rotation.z -= delta;
       break;
     case "F'":
       moveGroup.rotation.z += delta;
       break;
-    case 'B':
+    case "B":
       moveGroup.rotation.z += delta;
       break;
     case "B'":
@@ -139,37 +141,37 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
 
 export const cleanUpMove = (move: Move, moveGroup: Group): void => {
   switch (move) {
-    case 'R':
+    case "R":
       moveGroup.rotation.x = -Math.PI / 2;
       break;
     case "R'":
       moveGroup.rotation.x = Math.PI / 2;
       break;
-    case 'L':
+    case "L":
       moveGroup.rotation.x = Math.PI / 2;
       break;
     case "L'":
       moveGroup.rotation.x = -Math.PI / 2;
       break;
-    case 'U':
+    case "U":
       moveGroup.rotation.y = -Math.PI / 2;
       break;
     case "U'":
       moveGroup.rotation.y = Math.PI / 2;
       break;
-    case 'D':
+    case "D":
       moveGroup.rotation.y = Math.PI / 2;
       break;
     case "D'":
       moveGroup.rotation.y = -Math.PI / 2;
       break;
-    case 'F':
+    case "F":
       moveGroup.rotation.z = -Math.PI / 2;
       break;
     case "F'":
       moveGroup.rotation.z = Math.PI / 2;
       break;
-    case 'B':
+    case "B":
       moveGroup.rotation.z = Math.PI / 2;
       break;
     case "B'":
@@ -185,27 +187,27 @@ export const createStopCondition = (
   move: Move
 ): (() => boolean) => {
   switch (move) {
-    case 'R':
+    case "R":
       return () => moveGroup.rotation.x <= -Math.PI / 2;
     case "R'":
       return () => moveGroup.rotation.x >= Math.PI / 2;
-    case 'L':
+    case "L":
       return () => moveGroup.rotation.x >= Math.PI / 2;
     case "L'":
       return () => moveGroup.rotation.x <= -Math.PI / 2;
-    case 'U':
+    case "U":
       return () => moveGroup.rotation.y <= -Math.PI / 2;
     case "U'":
       return () => moveGroup.rotation.y >= Math.PI / 2;
-    case 'D':
+    case "D":
       return () => moveGroup.rotation.y >= Math.PI / 2;
     case "D'":
       return () => moveGroup.rotation.y <= -Math.PI / 2;
-    case 'F':
+    case "F":
       return () => moveGroup.rotation.z <= -Math.PI / 2;
     case "F'":
       return () => moveGroup.rotation.z >= Math.PI / 2;
-    case 'B':
+    case "B":
       return () => moveGroup.rotation.z >= Math.PI / 2;
     case "B'":
       return () => moveGroup.rotation.z <= -Math.PI / 2;
