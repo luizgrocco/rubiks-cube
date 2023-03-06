@@ -1,10 +1,10 @@
 import type { Group, Object3D } from "three";
-import { QueueAction } from "../components/Controls";
+import { MoveAction } from "../components/Controls";
 import { RubikCube } from "../components/Cube";
 type Cubie = Object3D;
 type Face = "RIGHT" | "LEFT" | "UPPER" | "DOWN" | "BACK" | "FRONT";
 
-const EPSILON = Number.EPSILON * 10;
+const EPSILON = Number.EPSILON * 1000;
 
 export const getCubiesByFace = (
   face: Face,
@@ -46,11 +46,38 @@ export const getCubiesByFace = (
   }
 };
 
+export type Move =
+  | "R"
+  | "R'"
+  | "L"
+  | "L'"
+  | "U"
+  | "U'"
+  | "D"
+  | "D'"
+  | "F"
+  | "F'"
+  | "B"
+  | "B'"
+  | "X"
+  | "X'"
+  | "Y"
+  | "Y'"
+  | "Z"
+  | "Z'";
+
 export const getCubiesByMove = (
   move: Move,
   cubeRef: RubikCube
 ): Array<Cubie> => {
   switch (move) {
+    case "X":
+    case "X'":
+    case "Y":
+    case "Y'":
+    case "Z":
+    case "Z'":
+      return [...cubeRef.children];
     case "R":
       return getCubiesByFace("RIGHT", cubeRef);
     case "R'":
@@ -80,31 +107,13 @@ export const getCubiesByMove = (
   }
 };
 
-export type Move =
-  | "R"
-  | "R'"
-  | "L"
-  | "L'"
-  | "U"
-  | "U'"
-  | "D"
-  | "D'"
-  | "F"
-  | "F'"
-  | "B"
-  | "B'"
-  | "X"
-  | "X'"
-  | "Y"
-  | "Y'"
-  | "Z"
-  | "Z'";
-
 export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
   switch (move) {
+    case "X":
     case "R":
       moveGroup.rotation.x -= delta;
       break;
+    case "X'":
     case "R'":
       moveGroup.rotation.x += delta;
       break;
@@ -114,9 +123,11 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
     case "L'":
       moveGroup.rotation.x -= delta;
       break;
+    case "Y":
     case "U":
       moveGroup.rotation.y -= delta;
       break;
+    case "Y'":
     case "U'":
       moveGroup.rotation.y += delta;
       break;
@@ -126,11 +137,11 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
     case "D'":
       moveGroup.rotation.y -= delta;
       break;
-    case "X":
+    case "Z":
     case "F":
       moveGroup.rotation.z -= delta;
       break;
-    case "X'":
+    case "Z'":
     case "F'":
       moveGroup.rotation.z += delta;
       break;
@@ -147,9 +158,11 @@ export const makeMove = (move: Move, moveGroup: Group, delta: number): void => {
 
 export const cleanUpMove = (move: Move, moveGroup: Group): void => {
   switch (move) {
+    case "X":
     case "R":
       moveGroup.rotation.x = -Math.PI / 2;
       break;
+    case "X'":
     case "R'":
       moveGroup.rotation.x = Math.PI / 2;
       break;
@@ -159,9 +172,11 @@ export const cleanUpMove = (move: Move, moveGroup: Group): void => {
     case "L'":
       moveGroup.rotation.x = -Math.PI / 2;
       break;
+    case "Y":
     case "U":
       moveGroup.rotation.y = -Math.PI / 2;
       break;
+    case "Y'":
     case "U'":
       moveGroup.rotation.y = Math.PI / 2;
       break;
@@ -171,9 +186,11 @@ export const cleanUpMove = (move: Move, moveGroup: Group): void => {
     case "D'":
       moveGroup.rotation.y = -Math.PI / 2;
       break;
+    case "Z":
     case "F":
       moveGroup.rotation.z = -Math.PI / 2;
       break;
+    case "Z'":
     case "F'":
       moveGroup.rotation.z = Math.PI / 2;
       break;
@@ -186,6 +203,14 @@ export const cleanUpMove = (move: Move, moveGroup: Group): void => {
     default:
       break;
   }
+  // TODO: Check if this is really working
+  [...moveGroup.children].forEach((child) =>
+    child.position.set(
+      Math.round(child.position.x),
+      Math.round(child.position.y),
+      Math.round(child.position.z)
+    )
+  );
 };
 
 export const createStopCondition = (
@@ -193,24 +218,30 @@ export const createStopCondition = (
   move: Move
 ): (() => boolean) => {
   switch (move) {
+    case "X":
     case "R":
       return () => moveGroup.rotation.x <= -Math.PI / 2;
+    case "X'":
     case "R'":
       return () => moveGroup.rotation.x >= Math.PI / 2;
     case "L":
       return () => moveGroup.rotation.x >= Math.PI / 2;
     case "L'":
       return () => moveGroup.rotation.x <= -Math.PI / 2;
+    case "Y":
     case "U":
       return () => moveGroup.rotation.y <= -Math.PI / 2;
+    case "Y'":
     case "U'":
       return () => moveGroup.rotation.y >= Math.PI / 2;
     case "D":
       return () => moveGroup.rotation.y >= Math.PI / 2;
     case "D'":
       return () => moveGroup.rotation.y <= -Math.PI / 2;
+    case "Z":
     case "F":
       return () => moveGroup.rotation.z <= -Math.PI / 2;
+    case "Z'":
     case "F'":
       return () => moveGroup.rotation.z >= Math.PI / 2;
     case "B":
@@ -225,7 +256,7 @@ export const createStopCondition = (
 export const addMoveToQueue = (
   cube: RubikCube,
   moveGroup: Group,
-  add: (...items: QueueAction[]) => void,
+  add: (...items: MoveAction[]) => void,
   ...moves: Move[]
 ): void => {
   add(

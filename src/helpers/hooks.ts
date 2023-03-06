@@ -5,7 +5,11 @@ export const useQueue = <T>(initialValue: T[] = []) => {
 
   return {
     add: push,
-    remove: () => removeAt(0),
+    remove: () => {
+      const el = list[0];
+      removeAt(0);
+      return el;
+    },
     first: list[0],
     queue: list,
     size: list.length,

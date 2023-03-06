@@ -1,7 +1,7 @@
 import { Edges } from "@react-three/drei";
 import { MeshProps } from "@react-three/fiber";
 import { useRef, useState } from "react";
-import { Material, Mesh } from "three";
+import type { Material, Mesh } from "three";
 
 interface CubieProps extends MeshProps {
   selectedMaterial: Material;
@@ -25,11 +25,17 @@ export default function Cubie({
         event.stopPropagation();
         setHovered(true);
       }}
-      onPointerOut={() => setHovered(false)}
+      onPointerOut={(event) => {
+        event.stopPropagation();
+        setHovered(false);
+      }}
+      onClick={(event) => {
+        event.stopPropagation();
+        console.log({ cubieRef });
+      }}
       castShadow
       geometry={geometry}
-      material={hovered ? selectedMaterial : cubieMaterials}
-    >
+      material={hovered ? selectedMaterial : cubieMaterials}>
       <Edges />
     </mesh>
   );

@@ -1,5 +1,4 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { Html, ScreenSpace } from "@react-three/drei";
 import { useControls } from "leva";
 import { useEffect, useMemo } from "react";
 import { Group } from "three";
@@ -7,8 +6,9 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { addMoveToQueue, cleanUpMove, makeMove, Move } from "../helpers/utils";
 import { RubikCube } from "./Cube";
 import { useQueue } from "../helpers/hooks";
+import { useQueueStore } from "../store/zustand";
 
-export interface QueueAction {
+export interface MoveAction {
   move: Move;
   initialized: boolean;
   initializationFn: () => void;
@@ -23,6 +23,7 @@ interface ControlsProps {
 
 const Controls = ({ position, cube }: ControlsProps) => {
   const { scene } = useThree();
+  const { updateMoveQueue } = useQueueStore();
 
   const moveGroup = useMemo(() => {
     const group = new Group();
@@ -40,9 +41,11 @@ const Controls = ({ position, cube }: ControlsProps) => {
     first: currentMove,
     size,
     queue
-  } = useQueue<QueueAction>();
+  } = useQueue<MoveAction>();
 
-  console.log({ queue });
+  useEffect(() => {
+    updateMoveQueue([...queue]);
+  }, [queue, updateMoveQueue]);
 
   const isThereAMoveToExecute = useMemo(() => size > 0, [size]);
 
@@ -89,40 +92,58 @@ const Controls = ({ position, cube }: ControlsProps) => {
     }
   }));
 
+  useHotkeys(keyboardMode ? "x" : "1", () =>
+    addMoveToQueue(cube, moveGroup, add, "X")
+  );
+  useHotkeys(keyboardMode ? "shift+x" : "shift+1", () =>
+    addMoveToQueue(cube, moveGroup, add, "X'")
+  );
+  useHotkeys(keyboardMode ? "y" : "2", () =>
+    addMoveToQueue(cube, moveGroup, add, "Y")
+  );
+  useHotkeys(keyboardMode ? "shift+y" : "shift+2", () =>
+    addMoveToQueue(cube, moveGroup, add, "Y'")
+  );
+  useHotkeys(keyboardMode ? "z" : "3", () =>
+    addMoveToQueue(cube, moveGroup, add, "Z")
+  );
+  useHotkeys(keyboardMode ? "shift+z" : "shift+3", () =>
+    addMoveToQueue(cube, moveGroup, add, "Z'")
+  );
   useHotkeys(keyboardMode ? "r" : "d", () =>
     addMoveToQueue(cube, moveGroup, add, "R")
-  );
-  useHotkeys(keyboardMode ? "l" : "a", () =>
-    addMoveToQueue(cube, moveGroup, add, "L")
-  );
-  useHotkeys(keyboardMode ? "u" : "w", () =>
-    addMoveToQueue(cube, moveGroup, add, "U")
-  );
-  useHotkeys(keyboardMode ? "d" : "s", () =>
-    addMoveToQueue(cube, moveGroup, add, "D")
-  );
-  useHotkeys(keyboardMode ? "f" : "e", () =>
-    addMoveToQueue(cube, moveGroup, add, "F")
-  );
-  useHotkeys(keyboardMode ? "b" : "q", () =>
-    addMoveToQueue(cube, moveGroup, add, "B")
   );
   useHotkeys(keyboardMode ? "shift+r" : "shift+d", () =>
     addMoveToQueue(cube, moveGroup, add, "R'")
   );
+  useHotkeys(keyboardMode ? "l" : "a", () =>
+    addMoveToQueue(cube, moveGroup, add, "L")
+  );
   useHotkeys(keyboardMode ? "shift+l" : "shift+a", () =>
     addMoveToQueue(cube, moveGroup, add, "L'")
+  );
+  useHotkeys(keyboardMode ? "u" : "w", () =>
+    addMoveToQueue(cube, moveGroup, add, "U")
   );
   useHotkeys(keyboardMode ? "shift+u" : "shift+w", () =>
     addMoveToQueue(cube, moveGroup, add, "U'")
   );
+  useHotkeys(keyboardMode ? "d" : "s", () =>
+    addMoveToQueue(cube, moveGroup, add, "D")
+  );
   useHotkeys(keyboardMode ? "shift+d" : "shift+s", () =>
     addMoveToQueue(cube, moveGroup, add, "D'")
   );
-  useHotkeys(keyboardMode ? "shift+f" : "shift+e", () =>
+  useHotkeys(keyboardMode ? "f" : "q", () =>
+    addMoveToQueue(cube, moveGroup, add, "F")
+  );
+  useHotkeys(keyboardMode ? "shift+f" : "shift+q", () =>
     addMoveToQueue(cube, moveGroup, add, "F'")
   );
-  useHotkeys(keyboardMode ? "shift+b" : "shift+q", () =>
+  useHotkeys(keyboardMode ? "b" : "e", () =>
+    addMoveToQueue(cube, moveGroup, add, "B")
+  );
+  useHotkeys(keyboardMode ? "shift+b" : "shift+e", () =>
     addMoveToQueue(cube, moveGroup, add, "B'")
   );
 
@@ -133,7 +154,7 @@ const Controls = ({ position, cube }: ControlsProps) => {
         currentMove.initializationFn();
       }
       if (!currentMove.stopCondition()) {
-        const delta = Math.PI / 4 / 60;
+        const delta = Math.PI / 4 / 30;
         makeMove(currentMove.move, moveGroup, delta);
       } else {
         cleanUpMove(currentMove.move, moveGroup);
@@ -147,11 +168,11 @@ const Controls = ({ position, cube }: ControlsProps) => {
 
   return (
     <>
-      <ScreenSpace depth={5}>
+      {/* <ScreenSpace depth={5}>
         <Html position={[0, 2, 0]}>
-          <div> WHERE IS MY DIIIIIIIIIIV </div>
+          <div style={{ display: "flex" }}> WHERE IS MY DIV </div>
         </Html>
-      </ScreenSpace>
+      </ScreenSpace> */}
     </>
   );
 };
