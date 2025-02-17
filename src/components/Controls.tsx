@@ -1,9 +1,15 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useControls } from "leva";
+import { useControls, button } from "leva";
 import { useEffect, useMemo } from "react";
 import { Group } from "three";
 import { useHotkeys } from "react-hotkeys-hook";
-import { addMoveToQueue, cleanUpMove, makeMove, Move } from "../helpers/utils";
+import {
+  addMoveToQueue,
+  cleanUpMove,
+  generateTNoodleScramble,
+  makeMove,
+  Move
+} from "../helpers/utils";
 import { RubikCube } from "./Cube";
 import { useQueue } from "../helpers/hooks";
 import { useQueueStore } from "../store/zustand";
@@ -36,8 +42,8 @@ const Controls = ({ position, cube }: ControlsProps) => {
   }, [moveGroup, scene]);
 
   const {
-    add,
-    remove,
+    enqueue,
+    dequeue,
     first: currentMove,
     size,
     queue
@@ -77,74 +83,76 @@ const Controls = ({ position, cube }: ControlsProps) => {
         cube.rotation.z = (rotateZ * Math.PI) / 180;
       }
     },
-    resetCube: {
-      value: true,
-      onChange: () => {
-        cube.rotation.set(0, 0, 0);
-        cube.position.set(...position);
-        const children = [...cube.children];
-        cube.children = [];
-        cube.add(...children);
+    resetCube: button(() => {
+      cube.rotation.set(0, 0, 0);
+      cube.position.set(...position);
+      cube.children.forEach((child) => child.rotation.set(0, 0, 0));
+    }),
+    scrambleCube: button(() => {
+      const moves = generateTNoodleScramble();
+      console.log(moves);
+      for (const move of moves) {
+        addMoveToQueue(cube, moveGroup, enqueue, move);
       }
-    },
+    }),
     keyboardMode: {
       value: false
     }
   }));
 
   useHotkeys(keyboardMode ? "x" : "1", () =>
-    addMoveToQueue(cube, moveGroup, add, "X")
+    addMoveToQueue(cube, moveGroup, enqueue, "X")
   );
   useHotkeys(keyboardMode ? "shift+x" : "shift+1", () =>
-    addMoveToQueue(cube, moveGroup, add, "X'")
+    addMoveToQueue(cube, moveGroup, enqueue, "X'")
   );
   useHotkeys(keyboardMode ? "y" : "2", () =>
-    addMoveToQueue(cube, moveGroup, add, "Y")
+    addMoveToQueue(cube, moveGroup, enqueue, "Y")
   );
   useHotkeys(keyboardMode ? "shift+y" : "shift+2", () =>
-    addMoveToQueue(cube, moveGroup, add, "Y'")
+    addMoveToQueue(cube, moveGroup, enqueue, "Y'")
   );
   useHotkeys(keyboardMode ? "z" : "3", () =>
-    addMoveToQueue(cube, moveGroup, add, "Z")
+    addMoveToQueue(cube, moveGroup, enqueue, "Z")
   );
   useHotkeys(keyboardMode ? "shift+z" : "shift+3", () =>
-    addMoveToQueue(cube, moveGroup, add, "Z'")
+    addMoveToQueue(cube, moveGroup, enqueue, "Z'")
   );
   useHotkeys(keyboardMode ? "r" : "d", () =>
-    addMoveToQueue(cube, moveGroup, add, "R")
+    addMoveToQueue(cube, moveGroup, enqueue, "R")
   );
   useHotkeys(keyboardMode ? "shift+r" : "shift+d", () =>
-    addMoveToQueue(cube, moveGroup, add, "R'")
+    addMoveToQueue(cube, moveGroup, enqueue, "R'")
   );
   useHotkeys(keyboardMode ? "l" : "a", () =>
-    addMoveToQueue(cube, moveGroup, add, "L")
+    addMoveToQueue(cube, moveGroup, enqueue, "L")
   );
   useHotkeys(keyboardMode ? "shift+l" : "shift+a", () =>
-    addMoveToQueue(cube, moveGroup, add, "L'")
+    addMoveToQueue(cube, moveGroup, enqueue, "L'")
   );
   useHotkeys(keyboardMode ? "u" : "w", () =>
-    addMoveToQueue(cube, moveGroup, add, "U")
+    addMoveToQueue(cube, moveGroup, enqueue, "U")
   );
   useHotkeys(keyboardMode ? "shift+u" : "shift+w", () =>
-    addMoveToQueue(cube, moveGroup, add, "U'")
+    addMoveToQueue(cube, moveGroup, enqueue, "U'")
   );
   useHotkeys(keyboardMode ? "d" : "s", () =>
-    addMoveToQueue(cube, moveGroup, add, "D")
+    addMoveToQueue(cube, moveGroup, enqueue, "D")
   );
   useHotkeys(keyboardMode ? "shift+d" : "shift+s", () =>
-    addMoveToQueue(cube, moveGroup, add, "D'")
+    addMoveToQueue(cube, moveGroup, enqueue, "D'")
   );
   useHotkeys(keyboardMode ? "f" : "q", () =>
-    addMoveToQueue(cube, moveGroup, add, "F")
+    addMoveToQueue(cube, moveGroup, enqueue, "F")
   );
   useHotkeys(keyboardMode ? "shift+f" : "shift+q", () =>
-    addMoveToQueue(cube, moveGroup, add, "F'")
+    addMoveToQueue(cube, moveGroup, enqueue, "F'")
   );
   useHotkeys(keyboardMode ? "b" : "e", () =>
-    addMoveToQueue(cube, moveGroup, add, "B")
+    addMoveToQueue(cube, moveGroup, enqueue, "B")
   );
   useHotkeys(keyboardMode ? "shift+b" : "shift+e", () =>
-    addMoveToQueue(cube, moveGroup, add, "B'")
+    addMoveToQueue(cube, moveGroup, enqueue, "B'")
   );
 
   useFrame(() => {
@@ -153,6 +161,7 @@ const Controls = ({ position, cube }: ControlsProps) => {
         console.log({ currentMove: currentMove.move });
         currentMove.initializationFn();
       }
+
       if (!currentMove.stopCondition()) {
         const delta = Math.PI / 4 / 30;
         makeMove(currentMove.move, moveGroup, delta);
@@ -161,7 +170,7 @@ const Controls = ({ position, cube }: ControlsProps) => {
         const newChildren = [...moveGroup.children];
         newChildren.forEach((child) => cube.attach(child));
         moveGroup.rotation.set(0, 0, 0);
-        remove();
+        dequeue();
       }
     }
   });
