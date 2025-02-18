@@ -5,7 +5,7 @@ const App = () => {
   return (
     <>
       <ControlsUI />
-      <Scene />;
+      <Scene />
     </>
   );
 };
