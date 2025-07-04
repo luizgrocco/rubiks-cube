@@ -275,3 +275,46 @@ export const addMoveToQueue = (
     }))
   );
 };
+
+export function generateTNoodleScramble(length = 25): Move[] {
+  const moves: Move[] = [
+    "R",
+    "R'",
+    "L",
+    "L'",
+    "U",
+    "U'",
+    "D",
+    "D'",
+    "F",
+    "F'",
+    "B",
+    "B'"
+  ];
+
+  const scramble: Move[] = [];
+  let lastMove: Move | null = null;
+  let lastLastMove: Move | null = null;
+
+  for (let i = 0; i < length; i++) {
+    let move: Move;
+
+    do {
+      move = moves[Math.floor(Math.random() * moves.length)];
+    } while (
+      move === lastMove ||
+      (lastMove &&
+        move ===
+          (lastMove.endsWith("'")
+            ? lastMove.replace("'", "")
+            : lastMove + "'")) ||
+      (lastLastMove && move === lastLastMove) // Avoid repeating the last two moves
+    );
+
+    scramble.push(move);
+    lastLastMove = lastMove;
+    lastMove = move;
+  }
+
+  return scramble;
+}

@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import {
-  Stats,
-  OrbitControls,
-  Environment,
-  PerspectiveCamera,
-  Box
-} from "@react-three/drei";
+import { Stats, Environment, PerspectiveCamera } from "@react-three/drei";
 import Floor from "./Floor";
 import Cube, { RubikCube } from "./Cube";
 import Controls from "./Controls";
@@ -16,12 +10,10 @@ const Scene = () => {
 
   return (
     <Canvas>
-      <PerspectiveCamera makeDefault position={[7, 5, 7]} near={0.1} far={1000}>
-        <Box args={[1, 0, 0]} />
-      </PerspectiveCamera>
+      <PerspectiveCamera makeDefault position={[7, 5, 7]} near={0.1} far={30} />
       <Environment files="sunflowers_puresky_1k.hdr" background />
       <Stats />
-      <OrbitControls />
+
       <Cube position={[0, 0, 0]} ref={(node) => setCube(node)} />
       <Floor />
       <axesHelper args={[3]} />

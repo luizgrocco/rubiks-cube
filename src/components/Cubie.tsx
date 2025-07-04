@@ -31,7 +31,7 @@ export default function Cubie({
       }}
       onClick={(event) => {
         event.stopPropagation();
-        console.log({ cubieRef });
+        console.log(cubieRef.current);
       }}
       castShadow
       geometry={geometry}

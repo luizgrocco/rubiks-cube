@@ -25,7 +25,12 @@ const Cube = (
   );
 
   const selectedMaterial = useMemo(
-    () => new MeshBasicMaterial({ color: "hotpink" }),
+    () =>
+      new MeshBasicMaterial({
+        color: "hotpink",
+        opacity: 0.4,
+        transparent: true
+      }),
     []
   );
 
