@@ -14,9 +14,7 @@ import {
 import { RubikCube } from "./Cube";
 import { useQueue } from "../helpers/hooks";
 import { useQueueStore } from "../store/zustand";
-import { Billboard, Html, OrbitControls, Text3D } from "@react-three/drei";
-import * as THREE from "three";
-import helvetiker from "three/examples/fonts/helvetiker_regular.typeface.json";
+import { OrbitControls } from "@react-three/drei";
 
 export interface MoveAction {
   move: Move;
@@ -194,12 +192,6 @@ const Controls = ({ position, cube }: ControlsProps) => {
     }
   });
 
-  const letterMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: "#007BFF"
-    });
-  }, []);
-
   return (
     <>
       <OrbitControls
@@ -218,37 +210,6 @@ const Controls = ({ position, cube }: ControlsProps) => {
         // Use inertia for spring-back effect
         rotateSpeed={0.5} // Adjust for how fast the rotation occurs
       />
-      {/* <Billboard
-        position={[2, -0.5, 0.5]}
-        follow={true}
-        lockX={false}
-        lockY={false}
-        lockZ={false} // Lock the rotation on the z axis (default=false)
-      ></Billboard> */}
-      <Text3D
-        font={helvetiker}
-        material={letterMaterial}
-        position={[2, 0, 0]}
-        rotation={[0, Math.PI / 2, 0]}
-        size={0.7}>
-        D
-      </Text3D>
-      <Text3D
-        font={helvetiker}
-        material={letterMaterial}
-        position={[0, 0, 2]}
-        rotation={[0, 0, 0]}
-        size={0.7}>
-        F
-      </Text3D>
-      <Text3D
-        font={helvetiker}
-        material={letterMaterial}
-        position={[0, 2, 0]}
-        rotation={[0, 0, 0]}
-        size={0.7}>
-        W
-      </Text3D>
     </>
   );
 };
